@@ -46,13 +46,13 @@ namespace ARBudgetTracker.Controllers
             return Ok(transaction);
         }
 
-        // GET: api/Transactions/FindByCategory/Salary
+        // GET: api/Transactions/FindByCategory?categoryName=""
         [Route("FindByCategory")]
         [ResponseType(typeof(List<Transaction>))]
         public IHttpActionResult FindTransaction(string categoryName)
         {
             var user = db.Users.Find(User.Identity.GetUserId());
-            return Ok(db.Transactions.Where(t => t.Category.Name == categoryName && user.Household.Accounts.Contains(t.Account)).ToList());
+            return Ok(db.Transactions.Where(t => t.Category.Name == categoryName).ToList());
         }
 
         // PUT: api/Transactions/Edit/5
