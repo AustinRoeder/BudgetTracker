@@ -44,7 +44,7 @@ namespace ARBudgetTracker.Providers
             ClaimsIdentity cookiesIdentity = await user.GenerateUserIdentityAsync(userManager,
                 CookieAuthenticationDefaults.AuthenticationType);
 
-            AuthenticationProperties properties = CreateProperties(user.UserName);
+            AuthenticationProperties properties = CreateProperties(user);
             AuthenticationTicket ticket = new AuthenticationTicket(oAuthIdentity, properties);
             context.Validated(ticket);
             context.Request.Context.Authentication.SignIn(cookiesIdentity);
@@ -59,7 +59,7 @@ namespace ARBudgetTracker.Providers
 
             var newIdentity = await user.GenerateUserIdentityAsync(userManager, OAuthDefaults.AuthenticationType);
 
-            var newTicket = new AuthenticationTicket(newIdentity, context.Ticket.Properties);
+            var newTicket = new AuthenticationTicket(newIdentity, CreateProperties(user));
             context.Validated(newTicket);
         }
 
@@ -99,11 +99,12 @@ namespace ARBudgetTracker.Providers
             return Task.FromResult<object>(null);
         }
 
-        public static AuthenticationProperties CreateProperties(string userName)
+        public static AuthenticationProperties CreateProperties(ApplicationUser user)
         {
             IDictionary<string, string> data = new Dictionary<string, string>
             {
-                { "userName", userName }
+                { "userName", user.UserName },
+                { "householdId", user.HouseholdId.ToString()}
             };
             return new AuthenticationProperties(data);
         }

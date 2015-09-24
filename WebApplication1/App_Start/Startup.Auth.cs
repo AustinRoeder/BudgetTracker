@@ -39,7 +39,7 @@ namespace ARBudgetTracker
                 Provider = new ApplicationOAuthProvider(PublicClientId),
                 RefreshTokenProvider = new RefreshTokenProvider(),
                 AuthorizeEndpointPath = new PathString("/api/Account/ExternalLogin"),
-                AccessTokenExpireTimeSpan = TimeSpan.FromDays(14),
+                AccessTokenExpireTimeSpan = TimeSpan.FromHours(3),
                 AllowInsecureHttp = true
             };
 
