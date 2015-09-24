@@ -1,0 +1,92 @@
+﻿<h2>{{accountDetails.display.Name}}</h2>
+<div class="row">
+    <div class="col-sm-8">
+        <div class="panel panel-warning">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    Transactions
+                    <span class="pull-right">
+                        <span>Accounted : {{accountDetails.display.Balance | currency}}  |  Reconciled : {{accountDetails.display.RecBalance | currency}}</span>
+                    </span>
+                </h3>
+            </div>
+            <table tr-ng-grid="" page-items="10" items="accountDetails.display.Transactions">
+                <thead>
+                    <tr>
+                        <th field-name="Description" display-name="Description"></th>
+                        <th field-name="Category.Name" display-name="Category"></th>
+                        <th field-name="Amount" display-name="Amount" display-format="currency"></th>
+                        <th field-name="IsReconciled" display-name="Reconciled"></th>
+                        <th field-name="Created" display-name="Created On" display-format="date: 'mediumDate'"></th>
+                        <th enable-sorting="false" enable-filtering="false" display-name="Action"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <a class="glyphicon glyphicon-edit" ng-click="accountDetails.beginEdit(gridItem.Id)" ng-hide="gridItem.Category.Name == 'Account Created' || gridItem.Category.Name == 'Edited Balance'">&nbsp;</a>
+                            <a class="fa fa-trash" ng-click="accountDetails.deleteTrans(gridItem.Id)" ng-hide="gridItem.Category.Name == 'Account Created' || gridItem.Category.Name == 'Edited Balance'"></a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="panel panel-warning">
+            <div class="panel-heading">
+                <h3 class="panel-title" ng-if="accountDetails.managePanel == 'c'">
+                    Create New Transaction
+                </h3>
+                <h3 class="panel-title" ng-if="accountDetails.managePanel == 'e'">
+                    Edit Transaction
+                </h3>
+            </div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <label for="desc">Description</label>
+                    <input id="desc" class="form-control underline" type="text" ng-model="accountDetails.model.Description" placeholder="Enter Short Description" />
+                </div>
+                <div class="form-group">
+                    <label for="bal">Amount</label>
+                    <input id="bal" class="form-control underline" type="text" ng-model="accountDetails.model.Amount" placeholder="Transaction Amount" />
+                </div>
+                <div class="form-group">
+                    <label for="cat">Category</label>
+                    <select ng-options="category as category.Name for category in accountDetails.categories track by category.Id" ng-model="accountDetails.model.Category" class="form-control" id="cat"></select>
+                </div>
+                <div class="row form-inline">
+                    <div class="col-sm-7 form-group">
+                        <div class="form-inline">
+                            Reconciled
+                            <div class="form-group">
+                                <switch id="enabled" name="enabled" ng-model="accountDetails.model.IsReconciled" class="green"></switch>
+                            </div>
+                            Not-Reconciled
+                        </div>
+                    </div>
+                    <div class="col-sm-5 form-group">
+                        <div class="form-inline">
+                            Credit
+                            <div class="form-group">
+                                <switch id="enabled" name="enabled" ng-model="accountDetails.model.IsDebit" class="green"></switch>
+                            </div>
+                            Debit
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group col-xs-3 col-sm-offset-4">
+                    <button class="form-control" type="submit" ng-click="accountDetails.createTrans()" ng-if="accountDetails.managePanel == 'c'">Create</button>
+                    <div ng-if="accountDetails.managePanel == 'e'" class="form-group form-inline row">
+                        <div class="col-sm-6">
+                            <button class="form-control" type="submit" ng-click="accountDetails.editTrans(accountDetails.model.Id)">Edit</button>
+                        </div>
+                        <div class="col-sm-6">
+                            <button class="form-control" type="submit" ng-click="accountDetails.beginNew()">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

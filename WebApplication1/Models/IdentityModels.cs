@@ -3,9 +3,10 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
+using System.Collections.Generic;
 
 namespace ARBudgetTracker.Models
-{
+{ 
     // You can add profile data for the user by adding more properties to your ApplicationUser class, please visit http://go.microsoft.com/fwlink/?LinkID=317594 to learn more.
     public class ApplicationUser : IdentityUser
     {
@@ -37,6 +38,54 @@ namespace ARBudgetTracker.Models
         {
             return new ApplicationDbContext();
         }
+
+        public async Task<bool> AddRefreshToken(RefreshToken token)
+        {
+
+            var existingToken = await RefreshTokens.SingleOrDefaultAsync(r => r.Subject == token.Subject);
+
+            if (existingToken != null)
+            {
+                var result = await RemoveRefreshToken(existingToken);
+            }
+
+            RefreshTokens.Add(token);
+
+            return await SaveChangesAsync() > 0;
+        }
+
+        public async Task<bool> RemoveRefreshToken(string refreshTokenId)
+        {
+            var refreshToken = await RefreshTokens.FindAsync(refreshTokenId);
+
+            if (refreshToken != null)
+            {
+                RefreshTokens.Remove(refreshToken);
+                return await SaveChangesAsync() > 0;
+            }
+
+            return false;
+        }
+
+        public async Task<bool> RemoveRefreshToken(RefreshToken refreshToken)
+        {
+            RefreshTokens.Remove(refreshToken);
+            return await SaveChangesAsync() > 0;
+        }
+
+        public async Task<RefreshToken> FindRefreshToken(string refreshTokenId)
+        {
+            var refreshToken = await RefreshTokens.FindAsync(refreshTokenId);
+
+            return refreshToken;
+        }
+
+        public async Task<List<RefreshToken>> GetAllRefreshTokens()
+        {
+            return await RefreshTokens.ToListAsync();
+        }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
+
         public System.Data.Entity.DbSet<ARBudgetTracker.Models.BudgetItem> BudgetItems { get; set; }
 
         public System.Data.Entity.DbSet<ARBudgetTracker.Models.Category> Categories { get; set; }

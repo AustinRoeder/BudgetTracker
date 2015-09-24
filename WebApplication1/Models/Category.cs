@@ -16,6 +16,9 @@ namespace ARBudgetTracker.Models
 
         public int Id { get; set; }
         public string Name { get; set; }
+        public int? HouseholdId { get; set; }
+        [JsonIgnore]
+        public virtual Household Household { get; set; }
         [JsonIgnore]
         public virtual ICollection<BudgetItem> BudgetItems { get; set; }
         [JsonIgnore]

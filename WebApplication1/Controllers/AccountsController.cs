@@ -11,6 +11,7 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using ARBudgetTracker.Models;
 using Microsoft.AspNet.Identity;
+using ARBudgetTracker.Models.DashModels;
 
 namespace ARBudgetTracker.Controllers
 {
@@ -20,17 +21,23 @@ namespace ARBudgetTracker.Controllers
     {
         private ApplicationDbContext db = new ApplicationDbContext();
 
-        // GET: api/Accounts/HouseAccounts
-        [Route("HouseAccounts")]
-        public IQueryable<Account> GetAccounts(int hId)
+        public class Options
         {
-            var accounts = db.Accounts.Where(a=>a.IsArchived == false &&
-                                                                a.HouseholdId == hId);
+            public string Name { get; set; }
+            public decimal? Balance { get; set; }
+        }
+
+        // GET: api/Accounts/HouseAccounts
+        [HttpPost, Route("HouseAccounts")]
+        public IQueryable<Account> GetAccounts()
+        {
+            var user = db.Users.Find(User.Identity.GetUserId());
+            var accounts = user.Household.Accounts.Where(a => a.IsArchived == false).AsQueryable();
             return accounts;
         }
 
         // GET: api/Accounts/Find
-        [Route("Find")]
+        [HttpPost, Route("Find")]
         [ResponseType(typeof(Account))]
         public async Task<IHttpActionResult> GetAccount(int id)
         {
@@ -44,32 +51,49 @@ namespace ARBudgetTracker.Controllers
             return Ok(Account);
         }
 
-        // api/Accounts/Adjust
-        [Route("Adjust")]
+        // PUT: api/Accounts/Edit?id&name
+        [HttpPost, Route("Edit")]
         [ResponseType(typeof(Account))]
-        public async Task<IHttpActionResult> AdjustAccount(int id, decimal newBalance)
+        public async Task<IHttpActionResult> EditAccount(int id, Options options)
         {
             var user = db.Users.Find(User.Identity.GetUserId());
             var account = db.Accounts.Where(a => a.HouseholdId == user.HouseholdId &&
                                                                                 a.Id == id).FirstOrDefault();
-            var diff = newBalance - account.Balance;
-            if (diff != 0)
+            if ((options.Name == account.Name || String.IsNullOrWhiteSpace(options.Name)) && (options.Balance == account.Balance || options.Balance == null))
+                return Ok("No property to edit was given.");
+            if (options.Name != account.Name)
             {
+                account.Name = options.Name;
+            }
+
+            var editCategory = db.Categories.Where(c => c.Name == "Edited Balance").FirstOrDefault();
+
+            if(editCategory == null)
+            {
+                return InternalServerError(new Exception("The edited balance category was not found"));
+            }
+
+            if (options.Balance != account.Balance)
+            {
+                var diff = (decimal)(options.Balance - account.Balance);
                 db.Transactions.Add(new Transaction()
                 {
                     Description = "Balance Adjusted",
                     Amount = diff,
-                    CategoryId = 3,
-                    AccountId = id
+                    CategoryId = editCategory.Id,
+                    AccountId = id,
+                    IsReconciled = true
                 });
+                
+                account.Balance += diff;
+                account.RecBalance += diff;
             }
-            account.Balance += diff;
             await db.SaveChangesAsync();
             return Ok(account);
         }
 
         // PUT: api/Accounts/Archive?id
-        [Route("Archive")]
+        [HttpPost, Route("Archive")]
         [ResponseType(typeof(Account))]
         public async Task<IHttpActionResult> ArchiveAccount(int id)
         {
@@ -84,38 +108,40 @@ namespace ARBudgetTracker.Controllers
             return Ok(user.Household);
         }
 
-        // PUT: api/Accounts/Edit?id&name
-        [Route("Edit")]
-        [ResponseType(typeof(Account))]
-        public async Task<IHttpActionResult> EditAccount(int id, string name)
-        {
-            var Account = db.Accounts.Find(id);
-            if (!String.IsNullOrWhiteSpace(name))
-            {
-                Account.Name = name;
-            }
-            else
-                return Ok("No property to edit was given.");
-            await db.SaveChangesAsync();
-            return Ok(Account);
-        }
 
         // POST: api/Accounts/Create
-        [Route("Create")]
-        [ResponseType(typeof(Account))]
-        public async Task<IHttpActionResult> CreateAccount(string name)
+        [HttpPost, Route("Create")]
+        [ResponseType(typeof(AccountVM))]
+        public async Task<IHttpActionResult> CreateAccount(Options options)
         {
             var user = db.Users.Find(User.Identity.GetUserId());
+            var bal = options.Balance ?? 0;
             var Account = new Account()
             {
-                Name = name,
-                Balance = 0,
+                Name = options.Name,
+                RecBalance = bal,
+                Balance = bal,
                 HouseholdId = (int)user.HouseholdId
             };
 
+            var createCategory = db.Categories.Where(c=>c.Name == "Account Created").FirstOrDefault();
+
+            if(createCategory == null)
+            {
+                return InternalServerError(new Exception("The Account Created category was not found"));
+            }
+
+            Account.Transactions.Add(new Transaction
+            {
+                AccountId = Account.Id,
+                Amount = bal,
+                CategoryId = createCategory.Id,
+                Created = DateTimeOffset.Now,
+                Description = "Start-up Balance",
+                IsReconciled = true
+            });
             db.Accounts.Add(Account);
             await db.SaveChangesAsync();
-
             return Ok(Account);
         }
 

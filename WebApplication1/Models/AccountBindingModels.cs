@@ -50,7 +50,7 @@ namespace ARBudgetTracker.Models
         public string ConfirmPassword { get; set; }
 
         public bool Invited { get; set; }
-
+        public string DisplayName { get; set; }
         public string Code { get; set; }
     }
 

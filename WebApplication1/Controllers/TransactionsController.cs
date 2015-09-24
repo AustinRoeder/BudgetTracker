@@ -20,8 +20,38 @@ namespace ARBudgetTracker.Controllers
     {
         private ApplicationDbContext db = new ApplicationDbContext();
 
+        public class Options
+        {
+            public string Description { get; set; }
+            public decimal? Amount { get; set; }
+            public bool IsReconciled { get; set; }
+            public int? CategoryId { get; set; }
+            public bool IsDebit { get; set; }
+        }
+
+        [HttpPost, Route("RecentTransactions")]
+        [ResponseType(typeof(List<Transaction>))]
+        public async  Task<IHttpActionResult> RecentTransactions()
+        {
+            var user = db.Users.Find(User.Identity.GetUserId());
+            var trans = await db.Transactions.Where(t=>t.Account.HouseholdId == user.HouseholdId && !t.IsArchived).OrderByDescending(t=>t.Created).Take(5).ToListAsync();
+            var models = new List<object>();
+            foreach (var item in trans)
+            {
+                models.Add(new
+                {
+                    Created = item.Created,
+                    AccountName = item.Account.Name,
+                    Amount = item.Amount,
+                    Desc = item.Description
+                });
+            }
+                        
+            return Ok(models);
+        }
+
         // GET: api/Transactions/AccountTransactions
-        [Route("AccountTransactions")]
+        [HttpPost, Route("AccountTransactions")]
         public IQueryable<Transaction> AccountTransactions(int aId)
         {
             var user = db.Users.Find(User.Identity.GetUserId());
@@ -30,7 +60,7 @@ namespace ARBudgetTracker.Controllers
         }
 
         // GET: api/Transactions/Find/5
-        [Route("Find")]
+        [HttpPost, Route("Find")]
         [ResponseType(typeof(Transaction))]
         public async Task<IHttpActionResult> GetTransaction(int id)
         {
@@ -47,7 +77,7 @@ namespace ARBudgetTracker.Controllers
         }
 
         // GET: api/Transactions/FindByCategory?categoryName=""
-        [Route("FindByCategory")]
+        [HttpPost, Route("FindByCategory")]
         [ResponseType(typeof(List<Transaction>))]
         public IHttpActionResult FindTransaction(string categoryName)
         {
@@ -56,61 +86,79 @@ namespace ARBudgetTracker.Controllers
         }
 
         // PUT: api/Transactions/Edit/5
-        [Route("Edit")]
+        [HttpPost, Route("Edit")]
         [ResponseType(typeof(Transaction))]
-        public async Task<IHttpActionResult> EditTransaction(int id, string desc, decimal? a, int? catId, bool rec)
+        public async Task<IHttpActionResult> EditTransaction(int id, Options options)
         {
             var transaction = await db.Transactions.FindAsync(id);
-            if (catId == null && a == null && String.IsNullOrWhiteSpace(desc) && rec == transaction.IsReconciled)
+            options.IsReconciled = !options.IsReconciled;
+            if (options.IsDebit)
+                options.Amount *= -1;
+            if (options.CategoryId == null && options.Amount == null && String.IsNullOrWhiteSpace(options.Description) && options.IsReconciled == transaction.IsReconciled)
             {
                 return Ok("No property to edit was given.");
             }
             else
             {
-                FindEdited(desc, a, catId, rec, transaction);
+                FindEdited(options.Description, options.Amount, options.CategoryId, options.IsReconciled, transaction);
                 transaction.Updated = DateTimeOffset.Now;
             }
+            transaction.Category = null;
             await db.SaveChangesAsync();
             return Ok(transaction);
         }
 
         private static void FindEdited(string desc, decimal? a, int? catId, bool rec, Transaction transaction)
         {
-            
             if (!String.IsNullOrWhiteSpace(desc))
                 transaction.Description = desc;
             if (a != null)
             {
                 transaction.Account.Balance -= transaction.Amount;
+                transaction.Account.RecBalance -= transaction.Amount;
                 transaction.Amount = (decimal)a;
                 transaction.Account.Balance += (decimal)a;
+                transaction.Account.RecBalance += (decimal)a;
             }
             if (catId != null)
                 transaction.CategoryId = (int)catId;
             if (transaction.IsReconciled != rec)
+            {
                 transaction.IsReconciled = rec;
+                if (!rec)
+                    transaction.Account.RecBalance -= (decimal)a;
+                else
+                    transaction.Account.RecBalance += (decimal)a;
+            }
         }
 
         // POST: api/Transactions/Create
-        [Route("Create")]
+        [HttpPost, Route("Create")]
         [ResponseType(typeof(Transaction))]
         public async Task<IHttpActionResult> CreateTransaction(Transaction transaction)
         {
             transaction.Created = DateTimeOffset.Now;
+           // transaction.CategoryId = transaction.Category.Id;
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            db.Transactions.Add(transaction);
+            if (transaction.IsDebit)
+                transaction.Amount *= -1;
+            transaction.CategoryId = transaction.Category.Id;
+            transaction.Category = null;
             var account = db.Accounts.Find(transaction.AccountId);
             account.Balance += transaction.Amount;
+            if(transaction.IsReconciled)
+                account.RecBalance += transaction.Amount;
+            account.Transactions.Add(transaction);
 
             await db.SaveChangesAsync();
-            return Ok(transaction);
+            return Ok();
         }
 
         // DELETE: api/Transactions/Delete/5
-        [Route("Delete")]
+        [HttpPost, Route("Delete")]
         [ResponseType(typeof(Account))]
         public async Task<IHttpActionResult> DeleteTransaction(int id)
         {
@@ -121,6 +169,8 @@ namespace ARBudgetTracker.Controllers
                 return NotFound();
             }
             account.Balance -= transaction.Amount;
+            if (transaction.IsReconciled)
+                account.RecBalance -= transaction.Amount;
             db.Transactions.Remove(transaction);
             await db.SaveChangesAsync();
 

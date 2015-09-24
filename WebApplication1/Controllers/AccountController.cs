@@ -22,6 +22,7 @@ using System.Data.Entity.Infrastructure;
 using System.Data.Entity;
 using System.Linq;
 using System.Configuration;
+using ARBudgetTracker.Models.DashModels;
 
 namespace ARBudgetTracker.Controllers
 {
@@ -337,6 +338,7 @@ namespace ARBudgetTracker.Controllers
             var code = model.Code;
             var user = new ApplicationUser() { UserName = model.Email, Email = model.Email };
 
+            user.DisplayName = model.DisplayName ?? user.Email.Split('@').First();
             IdentityResult result = await UserManager.CreateAsync(user, model.Password);
 
             if (!result.Succeeded)
@@ -383,28 +385,33 @@ namespace ARBudgetTracker.Controllers
 
         private ApplicationDbContext db = new ApplicationDbContext();
 
-        // GET: api/Account/Households
-        [Route("Households")]
-        public IQueryable<Household> GetHouseholds()
+        [HttpPost]
+        public ApplicationUser GetUser()
         {
-            return db.Households;
+            return db.Users.Find(User.Identity.GetUserId());
         }
 
         // GET: api//Account/Household/5
-        [Route("Household")]
-        [ResponseType(typeof(Household))]
-        public async Task<IHttpActionResult> GetHousehold(int id)
+        [HttpPost, Route("Household")]
+        [ResponseType(typeof(HouseholdVM))]
+        public IHttpActionResult GetHousehold()
         {
-            Household household = await db.Households.FindAsync(id);
+            var user = db.Users.Find(User.Identity.GetUserId());
+            var household = user.Household;
             if (household == null)
             {
-                return Ok("Household specified was not found.");
+                return Ok("You are currently not in a household.");
             }
+            var model = new HouseholdVM();
+            model.Name = household.Name;
+            model.Users = household.Users.ToList();
+            model.BudgetItems = household.BudgetItems.ToList();
+            model.Accounts = household.Accounts.Where(a => a.IsArchived == false).ToList();
 
-            return Ok(household);
+            return Ok(model);
         }
         // GET: api//Account/HouseholdUsers?id=5
-        [Route("HouseholdUsers")]
+        [HttpPost, Route("HouseholdUsers")]
         [ResponseType(typeof(List<ApplicationUser>))]
         public async Task<IHttpActionResult> GetHouseholdUsers(int id)
         {
@@ -418,7 +425,7 @@ namespace ARBudgetTracker.Controllers
         }
 
         // POST: api/Account/JoinHousehold
-        [Route("JoinHousehold", Name="Join")]
+        [HttpPost, Route("JoinHousehold", Name = "Join")]
         [ResponseType(typeof(Household))]
         public async Task<IHttpActionResult> JoinHousehold(string inviteEmail, string inviteCode)
         {
@@ -437,7 +444,7 @@ namespace ARBudgetTracker.Controllers
 
 
         // POST: api/Account/CreateHousehold
-        [Route("CreateHousehold")]
+        [HttpPost, Route("CreateHousehold")]
         [ResponseType(typeof(Household))]
         public async Task<IHttpActionResult> CreateHousehold(string name)
         {
@@ -462,7 +469,7 @@ namespace ARBudgetTracker.Controllers
         }
 
         // POST: api/Account/LeaveHousehold
-        [Route("LeaveHousehold")]
+        [HttpPost, Route("LeaveHousehold")]
         [ResponseType(typeof(ApplicationUser))]
         public async Task<IHttpActionResult> LeaveHousehold()
         {
@@ -473,7 +480,7 @@ namespace ARBudgetTracker.Controllers
             return Ok(user);
         }
 
-        [Route("SendInvite")]
+        [HttpPost, Route("SendInvite")]
         [ResponseType(typeof(Invitation))]
         public async Task<IHttpActionResult> SendInvite(string email)
         {

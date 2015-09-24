@@ -17,11 +17,11 @@ namespace ARBudgetTracker.Models
         public int HouseholdId { get; set; }
         public string Name { get; set; }
         public decimal Balance { get; set; }
+        public decimal RecBalance { get; set; }
         public bool IsArchived { get; set; }
 
-        public virtual Household Household { get; set; }
-
         [JsonIgnore]
+        public virtual Household Household { get; set; }
         public virtual ICollection<Transaction> Transactions { get; set; }
     }
 }

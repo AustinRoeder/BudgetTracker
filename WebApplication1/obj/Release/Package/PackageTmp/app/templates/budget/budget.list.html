@@ -1,0 +1,132 @@
+﻿<div class="row base">
+    <div class="col-sm-6">
+        <div class="row">
+            <div class="panel panel-success">
+                <div class="panel-heading">
+                    <h2 class="panel-title">
+                        Income
+                    </h2>
+                </div>
+                <div class="panel-body">
+                    <table tr-ng-grid="" page-items="10" items="budgetList.budgetIncomes">
+                        <thead>
+                            <tr>
+                                <th field-name="Name" display-name="Name"></th>
+                                <th field-name="Amount" display-name="Amount" display-format="currency"></th>
+                                <th field-name="Category.Name" display-name="Category"></th>
+                                <th field-name="Frequency" display-name="Months Per Year"></th>
+                                <th enable-sorting="false" enable-filtering="false" display-name="Actions"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <span>
+                                        <a class="fa fa-edit" ng-click="budget.beginEdit(gridItem.Id)"></a>
+                                        <a class="fa fa-trash" ng-click="budget.deleteBudgetItem(gridItem.Id)"></a>
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="panel panel-danger">
+                <div class="panel-heading">
+                    <h2 class="panel-title">
+                        Expenses
+                    </h2>
+                </div>
+                <div class="panel-body">
+                    <table tr-ng-grid="" page-items="10" items="budgetList.budgetExpenses">
+                        <thead>
+                            <tr>
+                                <th field-name="Name" display-name="Name"></th>
+                                <th field-name="Amount" display-name="Amount" display-format="currency"></th>
+                                <th field-name="Category.Name" display-name="Category"></th>
+                                <th field-name="Frequency" display-name="Months Per Year"></th>
+                                <th enable-sorting="false" enable-filtering="false" display-name="Actions"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <span>
+                                        <a class="fa fa-edit" ng-click="budget.beginEdit(gridItem.Id)"></a>
+                                        <a class="fa fa-trash" ng-click="budget.deleteBudgetItem(gridItem.Id)"></a>
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-4 pull-right">
+        <div class="panel panel-warning">
+            <div class="panel-heading">
+                <h2 class="panel-title">
+                    <span ng-if="budget.managePanel == 'c'">New Budget Item</span>
+                    <span ng-if="budget.managePanel == 'e'">Edit Budget Item</span>
+                </h2>
+            </div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input id="name" class="form-control underline" type="text" ng-model="budget.model.Name" placeholder="Item Name" />
+                </div>
+                <div class="form-group">
+                    <label for="bal">Amount</label>
+                    <input id="bal" class="form-control underline" type="text" ng-model="budget.model.Amount" placeholder="Account balance" />
+                </div>
+                <div class="form-group">
+                    <label for="freq">Annual Frequency</label>
+                    <input id="freq" class="form-control underline" type="text" ng-model="budget.model.Frequency" placeholder="Value between 1 and 12" />
+                </div>
+                <div class="form-group">
+                    <label for="cat">Category</label>
+                    <tabset justified="true">
+                        <tab heading="Choose" class="tabset-thing">
+                            <div class="tab-content2">
+                                <select ng-options="category as category.Name for category in budget.categories track by category.Id" ng-model="budget.model.Category" class="form-control" id="cat"></select>
+                            </div>
+                        </tab>
+
+                        <tab heading="Create" class="tabset-thing">
+                            <div class="tab-content2">
+                                <input type="text" class="form-control" ng-model="budget.model.Category.Name">
+                            </div>
+                        </tab>
+                    </tabset>
+                </div>
+                
+                
+                <div class="row form-inline">
+                    <div class="col-sm-5 form-group">
+                        <div class="form-inline" ng-hide="budget.managePanel == 'd'">
+                            Income
+                            <div class="form-group">
+                                <switch id="enabled" name="enabled" ng-model="budget.model.isExpense" class="green"></switch>
+                            </div>
+                            Expense
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <button class="form-control" type="submit" ng-click="budget.createBudgetItem()" ng-if="budget.managePanel == 'c'">Create</button>
+                        <div ng-if="budget.managePanel == 'e'" class="form-group form-inline row">
+                            <div class="col-sm-6">
+                                <button class="form-control" type="submit" ng-click="budget.editBudgetItem(budget.model.Id)">Edit</button>
+                            </div>
+                            <div class="col-sm-6">
+                                <button class="form-control" type="submit" ng-click="budget.beginNew()">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

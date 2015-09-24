@@ -1,0 +1,64 @@
+﻿<div class="row base">
+    <div class="col-sm-3">
+        <div class="row">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        Accounts
+                    </h3>
+                </div>
+                <div class="panel-body">
+                    <div ng-repeat="account in dash.accounts">
+                        <h3><a ui-sref="accounts.details({id: account.Id})">{{account.Name}}</a></h3>
+                        <h4>&nbsp;&nbsp;&nbsp;{{account.Balance | currency}}</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        Recent Transactions
+                    </h3>
+                </div>
+                <div class="panel-body">
+                    <div ng-repeat="trans in dash.trans">
+                        <div class="well">
+                            <h5>{{trans.Created | date: 'mediumDate'}}&nbsp;&nbsp;-&nbsp;{{trans.AccountName}}</h5>
+                            <h5>{{(trans.Amount < 0 ? trans.Amount * -1 : trans.Amount) | currency}}</h5>
+                            <h5>{{trans.Desc}}</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-8 pull-right">
+        <div class="row">
+            <div class="panel panel-warning">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        This Month's Spending vs Budgeted
+                    </h3>
+                </div>
+                <div class="panel-body">
+                    <nvd3 options="dash.options" data="dash.values" style="width:100% !important"></nvd3>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="panel panel-warning">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        This Year's Spending
+                        <small style="color: white;">Per Month</small>
+                    </h3>
+                </div>
+                <div class="panel-body">
+                    <nvd3 options="dash.options" data="dash.valuesMonthly" style="width:100% !important"></nvd3>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,17 @@
+﻿<div class="heading">Login to your Account</div>
+<div class="input">
+    <form class="form-horizontal" role="form" action="">
+        <div class="login-input-group">
+            <span class="login-input-group-addon"><i class="fa fa-at fa-fw"></i></span>
+            <input type="email" class="form-control" name="email" placeholder="email" ng-model="signin.username">
+        </div>
+        <div class="login-input-group">
+            <span class="login-input-group-addon"><i class="fa fa-key fa-fw"></i></span>
+            <input type="password" class="form-control" placeholder="password" name="password" ng-model="signin.password">
+        </div>
+        <a class="btn btn-default btn-lg submit" ng-click="signin.login()">Login</a>
+    </form>
+</div>
+<div class="rightFooter">
+    <a ui-sref="signin.register">Don't have an Account?</a>
+</div>

@@ -1,0 +1,8 @@
+﻿<div>
+    <p>Create New Account</p>
+    <hr />
+    Account Name:&nbsp;<input type="text" ng-model="account.name" /><br />
+    Initial Balance:&nbsp;&nbsp;<input type="number" placeholder="0" ng-model="account.initBalance" />
+    <br /><br />
+    <button type="button" ng-click="account.createAccount(account.name, account.initBalance)">+ Add Account</button>
+</div>

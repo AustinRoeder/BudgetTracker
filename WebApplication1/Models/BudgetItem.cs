@@ -13,6 +13,7 @@ namespace ARBudgetTracker.Models
         public int HouseholdId { get; set; }
         public decimal Amount { get; set; }
         public string Name { get; set; }
+        public bool isExpense { get; set; }
 
         public virtual Category Category { get; set; }
         public virtual Household Household { get; set; }

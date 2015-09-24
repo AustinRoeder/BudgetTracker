@@ -1,0 +1,60 @@
+﻿<div class="row base">
+    <div class="text-center">
+        <h3>{{houseDetails.display.Name}} Household</h3>
+    </div>
+    <br />
+    <div class="col-sm-6">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    Members
+                </h3>
+            </div>
+            <div class="panel-body">
+                <table tr-ng-grid="" page-items="10" items="houseDetails.display.Users">
+                    <thead>
+                        <tr>
+                            <th field-name="DisplayName" display-name="Name"></th>
+                            <th field-name="Email" display-name="Email"></th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-4 col-sm-offset-1">
+        <div class="row">
+            <div class="panel panel-warning">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        Invite User
+                    </h3>
+                    <small>Invite another user to join your household</small>
+                </div>
+                <div class="panel-body">
+                    <label for="email">Email address</label>
+                    <input id="email" class="form-control underline" type="email" ng-model="house.email" placeholder="Enter Email" />
+                    <span class="btn btn-primary" style="margin-top: 10px" ng-click="house.sendInvite()">Send Invitation</span>
+                </div>
+                <div ng-show="house.sent">
+                    <alert ng-repeat="alert in houseDetails.alerts" type="{{alert.type}}" close="houseDetails.closeAlert($index)">{{alert.msg}}</alert>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="panel panel-danger">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        Leave
+                    </h3>
+                    <small>Leave your current household and start a new one.</small>
+                </div>
+                <div class="panel-body">
+                    <input type="checkbox" ng-model="house.understood" />&nbsp;I understand that I will no longer have access to my current household's accounts.
+                    <br />
+                    <button type="button" style="margin-top: 10px" class="btn btn-danger" ng-click="house.leaveHouse()">Leave this household</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

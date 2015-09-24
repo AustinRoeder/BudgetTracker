@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
+using Microsoft.AspNet.Identity;
 
 namespace ARBudgetTracker.Models
 {
@@ -17,13 +18,20 @@ namespace ARBudgetTracker.Models
         private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: api/Categories
+        [HttpPost]
         public IQueryable<Category> GetCategories()
         {
-            return db.Categories;
+            string[] names = { "Edited Balance", "Account Created"};
+            var user = db.Users.Find(User.Identity.GetUserId());
+
+            List<Category> array = db.Categories.Where(c => !names.Contains(c.Name) && c.HouseholdId == null).ToList();
+            array.AddRange(user.Household.Categories);
+
+            return array.AsQueryable();
         }
 
         // GET: api/Categories/5
-        [ResponseType(typeof(Category))]
+        [HttpPost, ResponseType(typeof(Category))]
         public async Task<IHttpActionResult> GetCategory(int id)
         {
             Category category = await db.Categories.FindAsync(id);
@@ -36,57 +44,35 @@ namespace ARBudgetTracker.Models
         }
 
         // PUT: api/Categories/5
-        [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> PutCategory(int id, Category category)
+        [HttpPost, ResponseType(typeof(void))]
+        public async Task<IHttpActionResult> PutCategory(int id, string name)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            if (id != category.Id)
-            {
-                return BadRequest();
-            }
-
-            db.Entry(category).State = EntityState.Modified;
-
-            try
-            {
-                await db.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CategoryExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return StatusCode(HttpStatusCode.NoContent);
+            Category category = await db.Categories.FindAsync(id);
+            category.Name = name;
+            await db.SaveChangesAsync();
+            return Ok(category);
         }
 
         // POST: api/Categories
-        [ResponseType(typeof(Category))]
-        public async Task<IHttpActionResult> PostCategory(Category category)
+        [HttpPost, ResponseType(typeof(Category))]
+        public async Task<IHttpActionResult> PostCategory(string name)
         {
-            if (!ModelState.IsValid)
+            var user = db.Users.Find(User.Identity.GetUserId());
+            if (!db.Categories.Any(c => c.Name == name && c.HouseholdId == user.HouseholdId))
             {
-                return BadRequest(ModelState);
+                Category category = new Category()
+                {
+                    Name = name,
+                };
+                db.Categories.Add(category);
+                await db.SaveChangesAsync();
             }
 
-            db.Categories.Add(category);
-            await db.SaveChangesAsync();
-
-            return CreatedAtRoute("DefaultApi", new { id = category.Id }, category);
+            return Ok();
         }
 
         // DELETE: api/Categories/5
-        [ResponseType(typeof(Category))]
+        [HttpPost, ResponseType(typeof(Category))]
         public async Task<IHttpActionResult> DeleteCategory(int id)
         {
             Category category = await db.Categories.FindAsync(id);

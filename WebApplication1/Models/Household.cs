@@ -13,6 +13,7 @@ namespace ARBudgetTracker.Models
             this.Users = new HashSet<ApplicationUser>();
             this.BudgetItems = new HashSet<BudgetItem>();
             this.Accounts = new HashSet<Account>();
+            this.Categories = new HashSet<Category>();
         }
 
         public int Id { get; set; }
@@ -24,5 +25,7 @@ namespace ARBudgetTracker.Models
         public virtual ICollection<BudgetItem> BudgetItems { get; set; }
         [JsonIgnore]
         public virtual ICollection<Account> Accounts { get; set; }
+        [JsonIgnore]
+        public virtual ICollection<Category> Categories { get; set; }
     }
 }

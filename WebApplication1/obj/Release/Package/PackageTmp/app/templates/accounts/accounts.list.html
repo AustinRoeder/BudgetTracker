@@ -1,0 +1,68 @@
+﻿<div class="row base">
+    <div class="col-sm-8">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <h3 class="panel-title">
+                    Accounts
+                </h3>
+            </div>
+            <div class="panel-body">
+                <table tr-ng-grid="" page-items="10" items="accountList.display">
+                    <thead>
+                        <tr>
+                            <th field-name="Transactions.length" display-name="Transactions"></th>
+                            <th field-name="Name" display-name="Account"></th>
+                            <th field-name="Balance" display-name="Balance" display-format="currency"></th>
+                            <th field-name="RecBalance" display-name="Reconciled Balance" display-format="currency"></th>
+                            <th enable-sorting="false" enable-filtering="false" display-name="Actions"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <span>
+                                    <a class="glyphicon glyphicon-eye-open" ui-sref="accounts.details({id: gridItem.Id})"></a>&nbsp;&nbsp;
+                                    <a class="glyphicon glyphicon-edit" ng-click="accountList.beginEdit(gridItem.Id)"></a>&nbsp;&nbsp;
+                                    <a class="glyphicon glyphicon-trash" ng-click="account.archiveAccount(griditem.Id)"></a>
+                                </span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="panel panel-warning">
+            <div class="panel-heading">
+                <h3 class="panel-title" ng-if="accountList.managePanel == 'c'">
+                    Create New Account
+                </h3>
+                <h3 class="panel-title" ng-if="accountList.managePanel == 'e'">
+                    Edit Account
+                </h3>
+            </div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <label for="name">Account Name</label>
+                    <input id="name" class="form-control underline" type="text" ng-model="accountList.model.Name" placeholder="Enter Name" />
+                </div>
+                <div class="form-group">
+                    <label for="bal">Balance</label>
+                    <input id="bal" class="form-control underline" type="text" ng-model="accountList.model.Balance" placeholder="Initial balance" />
+                </div>
+                <div class="form-group">
+                    <button type="button" ng-click="account.createAccount(accountList.model)" ng-if="accountList.managePanel == 'c'">+ Add Account</button>
+                    <div ng-if="accountList.managePanel == 'e'" class="form-group form-inline row">
+                        <div class="col-sm-2">
+                            <button class="form-control" type="submit" ng-click="account.editAccount(accountList.model.Id, accountList.model)">Edit</button>
+                        </div>
+                        <div class="col-sm-2">
+                            <button class="form-control" type="submit" ng-click="accountList.beginNew()">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
