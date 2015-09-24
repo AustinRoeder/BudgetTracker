@@ -127,6 +127,8 @@
                 }
                 if (authService.authentication.householdId == null ||
                     authService.authentication.householdId == "") {
+                    console.log('no');
+                    event.preventDefault()
                     $state.go('household.create');
                 }
             }

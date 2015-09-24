@@ -1,5 +1,5 @@
 ﻿'use strict';
-angular.module('budget_tracker').controller('houseDetailsCtrl', ['householdSvc', '$state', 'household', function (houseSvc, $state, household) {
+angular.module('budget_tracker').controller('houseDetailsCtrl', ['householdSvc', '$state', 'household','authSvc', function (houseSvc, $state, household, authSvc) {
     var self = this;
     
     this.display = household;

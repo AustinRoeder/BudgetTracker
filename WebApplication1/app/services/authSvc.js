@@ -25,7 +25,7 @@ angular.module('budget_tracker')
         var deferred = $q.defer();
 
         $http.post(serviceBase + 'token', data, { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }).success(function (response) {
-            localStorageService.set('authorizationData', { token: response.access_token, username: response.username, refreshToken: response.refresh_token});
+            localStorageService.set('authorizationData', { token: response.access_token, username: response.username, refreshToken: response.refresh_token, householdId: response.householdId});
 
             _authentication.isAuth = true;
             _authentication.username = username;
@@ -47,6 +47,7 @@ angular.module('budget_tracker')
 
         _authentication.isAuth = false;
         _authentication.username = "";
+        _authentication.householdId = null;
 
     };
 
@@ -56,6 +57,7 @@ angular.module('budget_tracker')
         if (authData) {
             _authentication.isAuth = true;
             _authentication.username = authData.username;
+            _authentication.householdId = authData.householdId;
         }
 
     };
@@ -73,7 +75,7 @@ angular.module('budget_tracker')
 
             $http.post(serviceBase + 'token', data, { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }).success(function (response) {
 
-                localStorageService.set('authorizationData', { token: response.access_token, username: response.username, refreshToken: response.refresh_token});
+                localStorageService.set('authorizationData', { token: response.access_token, username: response.username, refreshToken: response.refresh_token, householdId: response.householdId});
 
                 deferred.resolve(response);
 

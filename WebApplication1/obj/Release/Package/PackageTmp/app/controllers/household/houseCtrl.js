@@ -1,5 +1,5 @@
 ﻿'use strict';
-angular.module('budget_tracker').controller('houseCtrl', ['householdSvc', '$state', function (houseSvc, $state) {
+angular.module('budget_tracker').controller('houseCtrl', ['householdSvc', '$state', 'authSvc', function (houseSvc, $state, authSvc) {
     var self = this;
     this.sent = false;
     this.joinHouse = function (inviteEmail, inviteCode) {
@@ -9,11 +9,14 @@ angular.module('budget_tracker').controller('houseCtrl', ['householdSvc', '$stat
     }
     this.createHouse = function (name) {
         houseSvc.createHousehold(name).then(function (data) {
-            $state.go('household.details');
+            authSvc.refresh().then(function () {
+                $state.go('household.details');
+            })
         })
     }
     this.leaveHouse = function () {
         houseSvc.leaveHousehold(self.understood).then(function () {
+            self.refresh();
             $state.go('household.create');
         })
     }
@@ -21,5 +24,9 @@ angular.module('budget_tracker').controller('houseCtrl', ['householdSvc', '$stat
         houseSvc.sendInvite(self.email).then(function () {
             self.sent = true;
         });
+    }
+
+    this.refresh = function () {
+        authSvc.refresh()
     }
 }])

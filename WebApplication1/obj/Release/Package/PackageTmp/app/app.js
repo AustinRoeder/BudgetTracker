@@ -11,7 +11,10 @@
             .state('dashboard', {
                 url: "/dashboard",
                 templateUrl: "/app/templates/dashboard.html",
-                controller: "dashboardCtrl as dash"
+                controller: "dashboardCtrl as dash",
+                data: {
+                    requiresHousehold: true
+                }
             })
           .state('signin', {
               url: "",
@@ -112,8 +115,23 @@
         $httpProvider.interceptors.push('authInterceptorSvc');
     });
 
-    app.run(['authSvc', '$rootScope', '$state', function (authService, $rootScope, $state) {
+    app.run(['authSvc', '$rootScope', '$state', '$stateParams', function (authService, $rootScope, $state, $stateParams) {
+        $rootScope.$state = $state;
+        $rootScope.$stateParams = $stateParams;
         authService.fillAuthData();
 
+        $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
+            if (toState.data && toState.data.requiresHousehold === true) {
+                if (!authService.authentication.isAuth) {
+                    $state.go('login');
+                }
+                if (authService.authentication.householdId == null ||
+                    authService.authentication.householdId == "") {
+                    console.log('no');
+                    event.preventDefault()
+                    $state.go('household.create');
+                }
+            }
+        })
     }]);
 })();
