@@ -29,6 +29,7 @@ angular.module('budget_tracker')
 
             _authentication.isAuth = true;
             _authentication.username = username;
+            _authentication.householdId = response.householdId;
 
             deferred.resolve(response);
 

@@ -123,11 +123,11 @@
         $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
             if (toState.data && toState.data.requiresHousehold === true) {
                 if (!authService.authentication.isAuth) {
-                    $state.go('login');
+                    $state.go('signin.login');
                 }
                 if (authService.authentication.householdId == null ||
                     authService.authentication.householdId == "") {
-                    console.log('no');
+                    console.log(authService.authentication);
                     event.preventDefault()
                     $state.go('household.create');
                 }
