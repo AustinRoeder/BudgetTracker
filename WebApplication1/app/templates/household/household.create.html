@@ -8,3 +8,11 @@
         <a class="btn btn-default btn-lg submit" ng-click="house.createHouse(houseCreate.name)">Create</a>
     </form>
 </div>
+<div class="heading">Join Household</div>
+<div class="input">
+    <form class="form-horizontal" role="form" action="">
+        <input type="text" placeholder="Invited Email..." ng-model="houseJoin.email" />
+        <input type="text" placeholder="Invited Code..." ng-model="houseJoin.code" />
+        <button type="submit" ng-click="house.joinHouse(houseJoin.email, houseJoin.code)">Join</button>
+    </form>
+</div>

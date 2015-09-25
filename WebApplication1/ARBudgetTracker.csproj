@@ -247,9 +247,12 @@
     <Content Include="app\controllers\household\houseDetailsCtrl.js" />
     <Content Include="app\controllers\household\houseJoinCtrl.js" />
     <Content Include="app\controllers\layoutCtrl.js" />
+    <Content Include="app\controllers\profileCtrl.js" />
+    <Content Include="app\services\profileSvc.js" />
     <Content Include="app\templates\budget\budget.list.html" />
     <Content Include="app\templates\dashboard.html" />
     <Content Include="app\templates\login.html" />
+    <Content Include="app\templates\profile.html" />
     <Content Include="app\templates\register.html" />
     <Content Include="app\services\accountSvc.js" />
     <Content Include="app\services\budgetSvc.js" />

@@ -6,7 +6,7 @@ angular.module('budget_tracker').controller('signinCtrl', ['authSvc', '$state', 
     this.username = '';
     this.password = '';
     this.confirmPass = '';
-    this.errors = null;
+    this.error = null;
 
     this.registration = {
         Email: '',
@@ -18,15 +18,15 @@ angular.module('budget_tracker').controller('signinCtrl', ['authSvc', '$state', 
     self.login = function () {
         authSvc.login(self.username, self.password).then(function(success) {
             $state.go('dashboard');
-        }, function(error) {
-            self.errors = error.data;
+        }, function (error) {
+            self.error = error.error_description;
         });
     }
     self.register = function () {
         authSvc.saveRegistration(self.registration).then(function (success) {
             $state.go('dashboard');
         }, function (error) {
-            self.errors = error.data;
+            self.error = error.error_description;
         });
     }
 }])

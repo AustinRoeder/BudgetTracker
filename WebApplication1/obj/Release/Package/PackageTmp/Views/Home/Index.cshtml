@@ -52,6 +52,9 @@
                                             <a ui-sref="budget.list"><i class="fa fa-money"></i> Budget</a>
                                         </li>
                                         <li>
+                                            <a ui-sref="profile"><i class="fa fa-user"></i> Profile</a>
+                                        </li>
+                                        <li>
                                             <a href ng-click="layout.logout()"><i class="fa fa-power-off"></i> Logout</a>
                                         </li>
                                     </ul>
@@ -78,6 +81,9 @@
                                     </li>
                                     <li>
                                         <a ui-sref="budget.list"><i class="fa fa-money"></i> Budget</a>
+                                    </li>
+                                    <li>
+                                        <a ui-sref="profile"><i class="fa fa-user"></i> Profile</a>
                                     </li>
                                     <li>
                                         <a href ng-click="layout.logout()"><i class="fa fa-power-off"></i> Logout</a>
@@ -119,9 +125,11 @@
     <script src="~/app/services/householdSvc.js"></script>
     <script src="~/app/services/transactionSvc.js"></script>
     <script src="~/app/services/budgetSvc1.js"></script>
+    <script src="~/app/services/profileSvc.js"></script>
     <script src="~/app/controllers/layoutCtrl.js"></script>
     <script src="~/app/controllers/signinCtrl.js"></script>
     <script src="~/app/controllers/dashboardCtrl.js"></script>
+    <script src="~/app/controllers/profileCtrl.js"></script>
     <!-- Household Controllers -->
     <script src="~/app/controllers/household/houseCtrl.js"></script>
     <script src="~/app/controllers/household/houseJoinCtrl.js"></script>

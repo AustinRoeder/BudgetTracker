@@ -34,7 +34,8 @@ namespace ARBudgetTracker.Controllers
         public async  Task<IHttpActionResult> RecentTransactions()
         {
             var user = db.Users.Find(User.Identity.GetUserId());
-            var trans = await db.Transactions.Where(t=>t.Account.HouseholdId == user.HouseholdId && !t.IsArchived).OrderByDescending(t=>t.Created).Take(5).ToListAsync();
+            string[] arr = {"Edited Balance", "Account Created"};
+            var trans = await db.Transactions.Where(t=>t.Account.HouseholdId == user.HouseholdId && !t.IsArchived && !arr.Contains(t.Category.Name)).OrderByDescending(t=>t.Created).Take(5).ToListAsync();
             var models = new List<object>();
             foreach (var item in trans)
             {
@@ -91,6 +92,7 @@ namespace ARBudgetTracker.Controllers
         public async Task<IHttpActionResult> EditTransaction(int id, Options options)
         {
             var transaction = await db.Transactions.FindAsync(id);
+            transaction.Created = DateTimeOffset.Now;
             options.IsReconciled = !options.IsReconciled;
             if (options.IsDebit)
                 options.Amount *= -1;

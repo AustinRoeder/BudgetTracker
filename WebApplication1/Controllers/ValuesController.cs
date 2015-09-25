@@ -11,6 +11,7 @@ namespace ARBudgetTracker.Controllers
 {
     [Authorize]
     [RoutePrefix("api/values")]
+
     public class ValuesController : ApiController
     {
         ApplicationDbContext db = new ApplicationDbContext();
@@ -77,7 +78,8 @@ namespace ARBudgetTracker.Controllers
                     values = from month in monthsToDate
                              select new {
                                  x = month.ToString("MMM"),
-                                 y = db.Transactions.Where(t=>t.Created.Month == month.Month && t.Created.Year == month.Year  && t.Account.HouseholdId == user.HouseholdId && !t.IsDebit && !t.IsArchived)
+                                 y = db.Transactions.Where(t=>t.Created.Month == month.Month && t.Created.Year == month.Year  && t.Account.HouseholdId == user.HouseholdId && !t.IsDebit
+                                                                                                                    && !t.IsArchived && t.Category.Name != "Account Created" && t.Category.Name != "Edited Balance")
                                                         .Select(t=>t.Amount).DefaultIfEmpty().Sum()
                     }
                 },

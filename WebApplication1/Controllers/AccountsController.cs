@@ -82,7 +82,8 @@ namespace ARBudgetTracker.Controllers
                     Amount = diff,
                     CategoryId = editCategory.Id,
                     AccountId = id,
-                    IsReconciled = true
+                    IsReconciled = true,
+                    Created = DateTimeOffset.Now
                 });
                 
                 account.Balance += diff;

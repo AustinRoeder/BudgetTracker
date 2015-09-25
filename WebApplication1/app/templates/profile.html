@@ -1,0 +1,43 @@
+﻿<div class="row base text-center">
+    <div class="panel panel-warning col-sm-3 col-sm-offset-4">
+        <div class="panel-heading">
+            <h3 class="panel-title">
+                User Information
+            </h3>
+            <h4>
+                <a ng-click="profile.beginEdit()" style="color: blue; cursor: pointer">Change Password</a>
+            </h4>
+        </div>
+        <div class="panel-body">
+            <div ng-if="profile.managePanel == 'd'">
+                <label for="name">Display Name</label>
+                <h4 id="name">{{profile.user.DisplayName}}</h4>
+                <br />
+                <label for="email">Email</label>
+                <h4 id="email">{{profile.user.Email}}</h4>
+            </div>
+            <div ng-if="profile.managePanel == 'e'">
+                <div class="form-group">
+                    <label for="op">Old Password</label>
+                    <input id="op" class="form-control underline" type="text" ng-model="profile.model.OldPassword" />
+                </div>
+                <div class="form-group">
+                    <label for="np">New Password</label>
+                    <input id="np" class="form-control underline" type="text" ng-model="profile.model.NewPassword" />
+                </div>
+                <div class="form-group">
+                    <label for="cnp">Confirm New Password</label>
+                    <input id="cnp" class="form-control underline" type="text" ng-model="profile.model.ConfirmPassword" />
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-4">
+                        <button class="form-control" type="submit" ng-click="profile.edit(profile.model)">Edit</button>
+                    </div>
+                    <div class="col-sm-4">
+                        <button class="form-control" type="submit" ng-click="profile.doneEdit()">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

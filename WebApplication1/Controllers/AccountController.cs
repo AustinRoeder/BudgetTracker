@@ -23,6 +23,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Configuration;
 using ARBudgetTracker.Models.DashModels;
+using System.ComponentModel.DataAnnotations;
 
 namespace ARBudgetTracker.Controllers
 {
@@ -225,6 +226,33 @@ namespace ARBudgetTracker.Controllers
             }
 
             return Ok();
+        }
+
+        [HttpPost, Route("EditProfile")]
+        public async Task<IHttpActionResult> EditProfile(Model model)
+        {
+            var user = db.Users.Find(User.Identity.GetUserId());
+            if (String.IsNullOrWhiteSpace(model.NewPassword))
+            {
+                await ChangePassword(new ChangePasswordBindingModel { OldPassword = model.OldPassword, NewPassword = model.NewPassword, ConfirmPassword = model.ConfirmNewPassword});
+            }
+            if (String.IsNullOrWhiteSpace(model.DisplayName))
+            {
+                user.DisplayName = model.DisplayName;
+            }
+            await db.SaveChangesAsync();
+            return Ok(user);
+        }
+
+        public class Model
+        {
+            [DataType(DataType.Password)]
+            public string OldPassword { get; set; }
+            [DataType(DataType.Password)]
+            public string NewPassword { get; set; }
+            [DataType(DataType.Password)]
+            public string ConfirmNewPassword { get; set; }
+            public string DisplayName { get; set; }
         }
 
         // GET api/Account/ExternalLogin

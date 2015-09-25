@@ -16,6 +16,11 @@
                     requiresHousehold: true
                 }
             })
+            .state('profile', {
+                url: "/profile",
+                templateUrl: "/app/templates/profile.html",
+                controller: "profileCtrl as profile"
+            })
           .state('signin', {
               url: "",
               templateUrl: "/app/templates/signin.html",
@@ -105,7 +110,7 @@
                 controller: 'budgetListCtrl as budgetList'
             });
     });
-    var serviceBase = 'http://aroeder-budget.azurewebsites.net/';
+    var serviceBase = 'https://aroeder-budget.azurewebsites.net/';
     //var serviceBase = 'http://localhost:64752/';
     app.constant('ngAuthSettings', {
         apiServiceBaseUri: serviceBase

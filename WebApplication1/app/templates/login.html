@@ -9,6 +9,7 @@
             <span class="login-input-group-addon"><i class="fa fa-key fa-fw"></i></span>
             <input style="color: white" type="password" class="form-control" placeholder="password" name="password" ng-model="signin.password">
         </div>
+        <h5 style="color: red" ng-if="signin.error != null">{{signin.error}}</h5>
         <a class="btn btn-default btn-lg submit" ng-click="signin.login()">Login</a>
     </form>
 </div>
