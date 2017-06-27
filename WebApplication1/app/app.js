@@ -110,7 +110,8 @@
                 controller: 'budgetListCtrl as budgetList'
             });
     });
-    var serviceBase = 'https://aroeder-budget.azurewebsites.net/';
+   // var serviceBase = 'https://aroeder-budget.azurewebsites.net/';
+	var serviceBase = 'https://category-system-api.cloudhub.io/';
     //var serviceBase = 'http://localhost:64752/';
     app.constant('ngAuthSettings', {
         apiServiceBaseUri: serviceBase
